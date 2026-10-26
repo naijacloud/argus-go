@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 260" width="960" height="260" role="img" aria-label="Naijacloud Argus Go SDK">
+  <title>Naijacloud Argus — Go SDK</title>
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A0E0C"/>
+      <stop offset="100%" stop-color="#141A16"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.16" cy="0.5" r="0.8">
+      <stop offset="0%" stop-color="#008751" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#008751" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#008751"/>
+      <stop offset="55%" stop-color="#46C98A"/>
+      <stop offset="100%" stop-color="#00ADD8"/>
+    </linearGradient>
+    <linearGradient id="flap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#46C98A"/>
+      <stop offset="100%" stop-color="#008751"/>
+    </linearGradient>
+    <clipPath id="card"><rect width="960" height="260" rx="14"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#card)">
+    <rect width="960" height="260" fill="url(#ground)"/>
+    <rect width="960" height="260" fill="url(#glow)"/>
+
+    <!-- The flag as a full-bleed edge band: green / white / green, flush to the
+         right edge and muted as a whole, so it reads as a brand mark rather than
+         a decal sitting on top of the artwork. -->
+    <g opacity="0.5">
+      <rect x="888" y="0" width="24" height="260" fill="#008751"/>
+      <rect x="912" y="0" width="24" height="260" fill="#FFFFFF"/>
+      <rect x="936" y="0" width="24" height="260" fill="#008751"/>
+    </g>
+
+    <!-- Argus mark: an eye over a pulse line -->
+    <g transform="translate(64 86)">
+      <rect x="0" y="0" width="104" height="72" rx="12" fill="none" stroke="#008751" stroke-width="4"/>
+      <path d="M10 40 L30 40 L40 20 L54 56 L64 34 L72 40 L94 40" fill="none" stroke="url(#flap)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="96" cy="64" r="14" fill="#0A0E0C"/>
+      <circle cx="96" cy="64" r="9" fill="#46C98A"/>
+    </g>
+
+    <text x="212" y="122" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="#FFFFFF" letter-spacing="-1.4">Argus</text>
+    <text x="214" y="160" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="20" font-weight="500" fill="#8A988F" letter-spacing="0.4">Errors, logs, metrics and traces for Naija Cloud</text>
+
+    <g transform="translate(214 182)">
+      <rect x="0" y="0" width="96" height="34" rx="17" fill="#00ADD8" opacity="0.18"/>
+      <rect x="0.75" y="0.75" width="94.5" height="32.5" rx="16.25" fill="none" stroke="#00ADD8" stroke-width="1.5" opacity="0.8"/>
+      <text x="18" y="23" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#00ADD8">Go SDK</text>
+    </g>
+
+    <rect x="0" y="252" width="960" height="8" fill="url(#rule)"/>
+  </g>
+</svg>

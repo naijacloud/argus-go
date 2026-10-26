@@ -1,0 +1,80 @@
+name: Release
+
+# A Go module has no registry upload: the tag is the release. This workflow
+# makes sure the tag is one worth having (CI passes, the Version constant that
+# goes into sdk.version matches it, the changelog has its section), then
+# creates the GitHub release and asks the module proxy to fetch the tag so
+# `go get …@latest` and pkg.go.dev see it straight away.
+
+on:
+  push:
+    tags: ['v*']
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      # `gh release create`.
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag against the module
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(sed -n 's/^const Version = "\(.*\)"$/\1/p' client.go)"
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Tag $TAG does not match Version in client.go ($version). Events would report the wrong sdk.version. Delete the tag, fix the constant, tag again."
+            exit 1
+          fi
+          case "$version" in
+            *-*) ;; # a pre-release (v0.3.0-rc.1) needs no changelog section
+            *) grep -q "^## \[$version\]" CHANGELOG.md || {
+                 echo "::error::CHANGELOG.md has no '## [$version]' heading. Move the Unreleased entries under it."
+                 exit 1
+               } ;;
+          esac
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Create the GitHub release from the changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          awk -v v="$VERSION" '
+            index($0, "## [" v "]") == 1 { on = 1; next }
+            on && /^## / { exit }
+            on && !/^\[[^]]+\]: / { print }
+          ' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "See CHANGELOG.md." > notes.md
+          flags=()
+          case "$VERSION" in *-*) flags+=(--prerelease) ;; esac
+          gh release create "$TAG" --title "$TAG" --notes-file notes.md "${flags[@]}"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+
+      # The proxy fetches a tag the first time anyone asks for it; asking here
+      # means the first user does not wait for that, and a tag the proxy cannot
+      # read fails this run instead of a customer's build.
+      - name: Ask the module proxy for the new version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd "$(mktemp -d)"
+          GOPROXY=https://proxy.golang.org GOFLAGS=-mod=mod go list -m "github.com/naijacloud/argus-go@${TAG}"

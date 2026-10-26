@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # release.yml calls this workflow rather than repeating the matrix, so a tag
+  # is verified by exactly the checks that guard main.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      # Do not stop the other versions when one fails: knowing whether a break
+      # is version-specific is most of the diagnosis.
+      fail-fast: false
+      matrix:
+        # go.mod declares 1.22, so 1.22 is the floor that has to keep building.
+        # 1.23 is where http.Request.Pattern (and so http.route) appears.
+        go: ["1.22", "1.23", "stable"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          # There is no dependency cache to warm: the module has none.
+          cache: false
+
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "not gofmt'd:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Verify there are no dependencies
+        # The SDK runs inside customers' processes; every dependency is
+        # supply-chain risk and version-conflict pain in their builds. This is
+        # the check that keeps the count at zero.
+        run: |
+          go mod tidy
+          # go.sum is absent, not merely tracked-and-empty, when nothing is
+          # required. Either way it must carry no entries.
+          if [ -s go.sum ]; then
+            echo "go.sum is not empty; this module must have no dependencies"
+            cat go.sum
+            exit 1
+          fi
+          git diff --exit-code -- go.mod
+
+      - name: Build (the SDK and examples/)
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./... && go vet -tags contract ./...
+
+      - name: Test
+        # The tests need no network: they run a stand-in Argus on loopback.
+        # The contract test against a real Argus is build-tagged out.
+        run: go test -race ./...

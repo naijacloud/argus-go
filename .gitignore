@@ -1,0 +1,22 @@
+# Build output
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+
+# Coverage and profiling
+coverage.txt
+coverage.html
+*.prof
+
+# Editors
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Never commit a real DSN or upload token. The tests use the key
+# 00000000000000000000000000000000, which is not a credential.
+.env
+.env.*

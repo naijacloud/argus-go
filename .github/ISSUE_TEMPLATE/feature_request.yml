@@ -1,0 +1,22 @@
+name: Feature request
+description: Something the SDK should do and does not
+title: "[feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do, and where does the SDK get in the way?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like instead
+  - type: markdown
+    attributes:
+      value: |
+        If this needs a change to Argus itself rather than to this SDK, say so.
+        Every Argus SDK is built to one contract (spec/ in nc-argus), so a
+        change there lands in all of them together.

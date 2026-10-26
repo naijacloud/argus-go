@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/naijacloud/argus-go/security/advisories/new
+    about: Report privately. Never open a public issue for a vulnerability — see SECURITY.md.
+  - name: Naija Cloud support
+    url: https://www.naijacloud.com
+    about: Account, billing and Argus plan questions.

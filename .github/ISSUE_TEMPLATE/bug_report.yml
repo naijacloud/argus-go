@@ -1,0 +1,43 @@
+name: Bug report
+description: Something in the SDK behaves differently from the documentation
+title: "[bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste an upload token** (`argus_up_…`). Redact it, and if one has
+        already been posted anywhere, revoke it in the source's settings first.
+        A DSN is fine to share: it can only send data to that one source.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected, and what you got instead. Include the full error.
+    validations: {required: true}
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The smallest snippet that shows it. A failing test is ideal.
+      render: go
+    validations: {required: true}
+  - type: input
+    id: sdk
+    attributes:
+      label: SDK version
+      placeholder: "0.1.0"
+    validations: {required: true}
+  - type: input
+    id: runtime
+    attributes:
+      label: "Runtime"
+      description: "Go version (`go version`) and OS"
+    validations: {required: true}
+  - type: input
+    id: event_id
+    attributes:
+      label: Event id
+      description: >-
+        If an event reached Argus, its id (shown on the event in Argus, or
+        returned by CaptureException). It is the fastest way for us to find it.
